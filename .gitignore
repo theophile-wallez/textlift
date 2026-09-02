@@ -1,6 +1,7 @@
 node_modules/
 dist/
 public/vendor/
+icons/
 *.zip
 .DS_Store
 .worktrees/

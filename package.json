@@ -1,0 +1,39 @@
+{
+  "name": "textlift",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Chrome extension that reads the text of any image on the page and makes it selectable.",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "vendor": "node scripts/vendor.mjs",
+    "icons": "node scripts/make-icons.mjs",
+    "build": "node scripts/build.mjs",
+    "build:watch": "node scripts/build.mjs --watch",
+    "package": "node scripts/package.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "check": "npm run format:check && npm run typecheck && npm run build && npm run test",
+    "test:browser": "node test/browser.smoke.mjs",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "dependencies": {
+    "effect": "^3.22.1",
+    "tesseract.js": "^7.0.0",
+    "zod": "^4.5.4"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.2.8",
+    "@types/node": "^24.10.1",
+    "esbuild": "^0.28.2",
+    "playwright": "^1.61.1",
+    "prettier": "^3.9.6",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.10"
+  }
+}

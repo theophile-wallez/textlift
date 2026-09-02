@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>textlift settings</title>
+    <link rel="stylesheet" href="options.css" />
+  </head>
+  <body>
+    <main class="page">
+      <header class="head">
+        <h1>textlift</h1>
+        <p class="lede">
+          Right-click an image and choose <strong>Scan the text of this image</strong>. The text
+          becomes selectable over the picture.
+        </p>
+      </header>
+
+      <section class="card">
+        <h2>Languages</h2>
+        <p class="note">
+          English is inside the package. Every other language downloads once, then Chrome keeps it.
+          Two languages together read slower than one.
+        </p>
+        <input
+          id="language-filter"
+          class="filter"
+          type="search"
+          placeholder="Filter the languages"
+          autocomplete="off"
+        />
+        <div id="languages" class="languages"></div>
+      </section>
+
+      <section class="card">
+        <h2>Recognition</h2>
+
+        <label class="row" for="layout">
+          <span class="label">Page layout</span>
+          <select id="layout">
+            <option value="auto">Automatic</option>
+            <option value="block">One block of text</option>
+            <option value="line">One line of text</option>
+            <option value="sparse">Text spread over the image</option>
+          </select>
+        </label>
+
+        <label class="row" for="min-confidence">
+          <span class="label">
+            Minimum confidence
+            <output id="min-confidence-value" class="value"></output>
+          </span>
+          <input id="min-confidence" type="range" min="0" max="90" step="5" />
+        </label>
+        <p class="note">A higher value drops more uncertain words.</p>
+
+        <label class="row row--switch" for="upscale">
+          <span class="label">Enlarge a small image before the scan</span>
+          <input id="upscale" type="checkbox" />
+        </label>
+
+        <label class="row" for="max-scale">
+          <span class="label">
+            Largest enlargement
+            <output id="max-scale-value" class="value"></output>
+          </span>
+          <input id="max-scale" type="range" min="1" max="6" step="0.5" />
+        </label>
+        <p class="note">
+          A small image reads much better after an enlargement. It also costs time.
+        </p>
+      </section>
+
+      <section class="card">
+        <h2>Overlay</h2>
+
+        <label class="row row--switch" for="auto-copy">
+          <span class="label">Copy the whole text at the end of a scan</span>
+          <input id="auto-copy" type="checkbox" />
+        </label>
+
+        <label class="row row--switch" for="show-boxes">
+          <span class="label">Draw the box of every word</span>
+          <input id="show-boxes" type="checkbox" />
+        </label>
+      </section>
+
+      <footer class="foot">
+        <span id="state" class="state" role="status" aria-live="polite"></span>
+        <button id="reset" type="button">Restore the defaults</button>
+      </footer>
+    </main>
+    <script src="options.js" type="module"></script>
+  </body>
+</html>

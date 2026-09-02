@@ -1,0 +1,200 @@
+/*
+ * The styles of the overlay. They live inside a shadow root, so the page cannot
+ * reach them and they cannot reach the page.
+ */
+
+:host {
+  all: initial;
+  --tl-surface: #ffffff;
+  --tl-text: #1b1c1f;
+  --tl-muted: #6b6f76;
+  --tl-line: #e6e7ea;
+  --tl-accent: #2f6df6;
+  --tl-shadow: 0 1px 2px rgb(16 18 22 / 8%), 0 8px 24px rgb(16 18 22 / 12%);
+  font-family:
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :host {
+    --tl-surface: #1c1e22;
+    --tl-text: #f2f3f5;
+    --tl-muted: #a2a7af;
+    --tl-line: #32353b;
+    --tl-accent: #6d9bff;
+    --tl-shadow: 0 1px 2px rgb(0 0 0 / 40%), 0 8px 28px rgb(0 0 0 / 45%);
+  }
+}
+
+.frame,
+.bar,
+.pill {
+  position: fixed;
+  z-index: 2147483646;
+}
+
+/* The text layer. It sits over the pixels of the image. */
+.frame {
+  overflow: hidden;
+  pointer-events: none;
+  contain: layout style;
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--tl-accent) 55%, transparent);
+}
+
+.layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: auto;
+  cursor: text;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+.line {
+  position: absolute;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  white-space: pre;
+  transform-origin: 0 0;
+  line-height: 1;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  text-shadow: none;
+  font-weight: 400;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+}
+
+.line::selection {
+  background: color-mix(in srgb, var(--tl-accent) 40%, transparent);
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+/* The debug view of the boxes that the engine reported. */
+.box {
+  position: absolute;
+  pointer-events: none;
+  border: 1px solid color-mix(in srgb, var(--tl-accent) 70%, transparent);
+  background: color-mix(in srgb, var(--tl-accent) 10%, transparent);
+}
+
+.box[data-weak="true"] {
+  border-color: rgb(226 108 62 / 80%);
+}
+
+.boxes--hidden {
+  display: none;
+}
+
+/* The toolbar and the progress pill. */
+.bar,
+.pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-sizing: border-box;
+  padding: 6px 8px 6px 10px;
+  border: 1px solid var(--tl-line);
+  border-radius: 9px;
+  background: var(--tl-surface);
+  box-shadow: var(--tl-shadow);
+  color: var(--tl-text);
+  font-size: 12px;
+  line-height: 1.35;
+  pointer-events: auto;
+  opacity: 0;
+  transform: translateY(4px);
+  transition:
+    opacity 140ms cubic-bezier(0.2, 0, 0, 1),
+    transform 140ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+.bar[data-visible="true"],
+.pill[data-visible="true"] {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.status {
+  color: var(--tl-muted);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.status--error {
+  color: #d2452f;
+}
+
+@media (prefers-color-scheme: dark) {
+  .status--error {
+    color: #ff9b86;
+  }
+}
+
+button {
+  appearance: none;
+  margin: 0;
+  padding: 4px 9px;
+  border: 1px solid var(--tl-line);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--tl-text);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  transition:
+    background 100ms ease-out,
+    border-color 100ms ease-out;
+}
+
+button:hover {
+  background: color-mix(in srgb, var(--tl-text) 6%, transparent);
+}
+
+button:focus-visible {
+  outline: 2px solid var(--tl-accent);
+  outline-offset: 1px;
+}
+
+button[data-primary="true"] {
+  border-color: color-mix(in srgb, var(--tl-accent) 45%, var(--tl-line));
+  color: var(--tl-accent);
+}
+
+button[data-icon="true"] {
+  padding: 4px 7px;
+  color: var(--tl-muted);
+}
+
+.spinner {
+  width: 12px;
+  height: 12px;
+  flex: none;
+  border: 2px solid color-mix(in srgb, var(--tl-accent) 25%, transparent);
+  border-top-color: var(--tl-accent);
+  border-radius: 50%;
+  animation: spin 700ms linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bar,
+  .pill {
+    transition: none;
+  }
+
+  .spinner {
+    animation-duration: 2s;
+  }
+}
