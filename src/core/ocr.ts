@@ -60,12 +60,115 @@ const isPrintable = (text: string): boolean => text.trim().length > 0;
 export const keepWord = (word: OcrWord, minConfidence: number): boolean =>
   isPrintable(word.text) && word.confidence >= minConfidence;
 
+/* ------------------------------------------------------------------ *
+ * The pieces of a web address
+ *
+ * A chat window renders a hyphen of a link with wide space on both sides, and the
+ * engine reads that space as a word break. The copied address then carries a
+ * space, and it opens nothing.
+ *
+ * The gap of that hyphen measures the same share of the line height as a real
+ * word space, so no geometry tells them apart. The text does: a piece of an
+ * address carries a separator of its own, and a word of a sentence does not.
+ * ------------------------------------------------------------------ */
+
+/** Characters that hold the pieces of one address together. */
+const JOINERS = "-._/:?=&#~+%@";
+
+/**
+ * Separators that only an address carries. The hyphen stays out of this set,
+ * because "it" in "https://x.com - it is down" would otherwise join the address.
+ */
+const STRUCTURAL = /[._/?=&#%~]/;
+
+const isJoiner = (character: string): boolean => JOINERS.includes(character);
+
+const allJoiners = (token: string): boolean =>
+  token.length > 0 && [...token].every((character) => isJoiner(character));
+
+const hasLetterOrDigit = (token: string): boolean => /[\p{L}\p{N}]/u.test(token);
+
+/** Removes an opening bracket, a quotation mark, or a mark of a logo beside it. */
+const withoutLeadingMarks = (token: string): string => token.replace(/^[^\p{L}\p{N}]+/u, "");
+
+/**
+ * True when a token opens a web address.
+ *
+ * A scheme and a `www.` prefix are certain. A bare host needs two dots or a path,
+ * so an ordinary "Fin.Merci" opens nothing.
+ */
+const opensAddress = (token: string): boolean => {
+  const body = withoutLeadingMarks(token);
+  if (/^(https?:\/\/|www\.)/i.test(body)) return true;
+  const host = "^[\\p{L}\\p{N}][\\p{L}\\p{N}-]*";
+  const twoDots = new RegExp(`${host}(\\.[\\p{L}\\p{N}-]+){2,}`, "u");
+  const withPath = new RegExp(`${host}(\\.[\\p{L}\\p{N}-]+)+/`, "u");
+  return twoDots.test(body) || withPath.test(body);
+};
+
+/** True when a token continues an address instead of starting a new word. */
+const continuesAddress = (token: string): boolean =>
+  hasLetterOrDigit(token) && STRUCTURAL.test(token);
+
+/**
+ * Rebuilds the tokens of one address into one token.
+ *
+ * A join needs three things: a token that opens an address, a separator between
+ * the two pieces, and a piece that carries a separator of its own. So
+ * "10 - 20" and "Jean - Pierre" keep their spaces, and
+ * "https://x.com - it is down" keeps its own as well.
+ */
+export const joinAddressPieces = (tokens: readonly string[]): readonly string[] => {
+  const out: string[] = [];
+  let index = 0;
+
+  while (index < tokens.length) {
+    const token = tokens[index];
+    if (token === undefined) break;
+
+    if (!opensAddress(token)) {
+      out.push(token);
+      index += 1;
+      continue;
+    }
+
+    let address = token;
+    let next = index + 1;
+
+    while (next < tokens.length) {
+      const candidate = tokens[next];
+      if (candidate === undefined) break;
+
+      // A separator that stands alone belongs to the address when a piece of the
+      // address follows it.
+      if (allJoiners(candidate)) {
+        const after = tokens[next + 1];
+        if (after === undefined || !continuesAddress(after)) break;
+        address += candidate + after;
+        next += 2;
+        continue;
+      }
+
+      const tail = address.at(-1);
+      const head = candidate.at(0);
+      const attached =
+        (tail !== undefined && isJoiner(tail)) || (head !== undefined && isJoiner(head));
+      if (!attached || !continuesAddress(candidate)) break;
+
+      address += candidate;
+      next += 1;
+    }
+
+    out.push(address);
+    index = next;
+  }
+
+  return out;
+};
+
 /** Joins the words of one line. Tesseract reports the words in reading order. */
 export const lineText = (words: readonly OcrWord[]): string =>
-  words
-    .map((word) => word.text.trim())
-    .filter(isPrintable)
-    .join(" ");
+  joinAddressPieces(words.map((word) => word.text.trim()).filter(isPrintable)).join(" ");
 
 /**
  * Builds a line from its words. Returns null when no word survives the
