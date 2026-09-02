@@ -1,6 +1,6 @@
 {
   "name": "textlift",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "private": true,
   "type": "module",
   "description": "Chrome extension that reads the text of any image on the page and makes it selectable.",
