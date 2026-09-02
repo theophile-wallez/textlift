@@ -20,7 +20,8 @@
     "check": "npm run format:check && npm run typecheck && npm run build && npm run test",
     "test:browser": "node test/browser.smoke.mjs",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "demo": "node scripts/make-demo.mjs"
   },
   "dependencies": {
     "effect": "^3.22.1",

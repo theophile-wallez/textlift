@@ -1,41 +1,97 @@
-# textlift
-
-Right-click any image in Chrome and read its text. The words become selectable
-over the picture, the same way a PDF viewer shows the text of a scan.
-
-Everything runs on the machine. No image and no text leaves the browser.
+<div align="center">
 
 ```
-┌──────────────────────────────────────────┐
-│  The quick brown fox jumps over the dog  │  ← the pixels of the image
-└──────────────────────────────────────────┘
-  9 words · 1 line · 96%   [ Copy ]  [ ✕ ]    ← the overlay of textlift
+   ████████╗███████╗██╗  ██╗████████╗██╗     ██╗███████╗████████╗
+   ╚══██╔══╝██╔════╝╚██╗██╔╝╚══██╔══╝██║     ██║██╔════╝╚══██╔══╝
+      ██║   █████╗   ╚███╔╝    ██║   ██║     ██║█████╗     ██║
+      ██║   ██╔══╝   ██╔██╗    ██║   ██║     ██║██╔══╝     ██║
+      ██║   ███████╗██╔╝ ██╗   ██║   ███████╗██║██║        ██║
+      ╚═╝   ╚══════╝╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝╚═╝        ╚═╝
 ```
 
-## What it does
+### Right-click any image in Chrome and read its text.
 
-- **Scan the text of this image.** A menu item on every image of every page.
-- **Scan the text of a screen region.** Drag a rectangle over anything: a CSS
-  background, a canvas, a video frame, a chart, or the page itself. The toolbar
-  button and `Alt+Shift+S` start the same selection.
-- **Select and copy.** The overlay places a transparent line of text over every
-  line that the engine found. Select with the mouse, copy with the keyboard, or
-  press the `Copy` button for the whole text.
-- **28 languages.** English is inside the package. Every other language
-  downloads once and stays in the browser.
+The words become selectable over the picture, the way a PDF viewer shows the text
+of a scan. Everything runs on your machine.
 
-## Install from the source
+![Platform](https://img.shields.io/badge/platform-Chrome%20116%2B-4285f4?style=flat-square)
+![Manifest](https://img.shields.io/badge/manifest-v3-1e1e1e?style=flat-square)
+![Engine](https://img.shields.io/badge/engine-Tesseract%20WebAssembly-2ea043?style=flat-square)
+![Stack](https://img.shields.io/badge/stack-TypeScript%20%2B%20Effect%20%2B%20Zod-3178c6?style=flat-square)
+![Offline](https://img.shields.io/badge/network-never-6b6f76?style=flat-square)
+![Vibe-coded](https://img.shields.io/badge/100%25-vibe--coded-ff69b4?style=flat-square)
+
+[![Release](https://img.shields.io/github/v/release/theophile-wallez/textlift?style=flat-square&label=download)](https://github.com/theophile-wallez/textlift/releases/latest)
+[![Build](https://img.shields.io/github/actions/workflow/status/theophile-wallez/textlift/release.yml?style=flat-square&label=release%20build)](https://github.com/theophile-wallez/textlift/actions/workflows/release.yml)
+
+<img src="docs/demo.png" alt="A note image with one selected line of text and the toolbar of the extension" width="820">
+
+</div>
+
+---
+
+## What is textlift?
+
+**textlift** turns the text inside a picture into text you can select. Right-click
+an image, choose **Scan the text of this image**, and a transparent layer of text
+lands over the pixels: drag across a line, press `Ctrl+C`, paste it anywhere.
+
+The recognition runs in WebAssembly inside the extension. No image and no text
+ever reaches a server, and the whole thing works with the network off.
+
+> **Vibe-coded:** this project is 100% vibe-coded — built end-to-end with an AI
+> coding agent, guided by intuition and momentum rather than a formal spec. Treat
+> it accordingly: a fast-moving experiment, not battle-tested production software.
+> Read the code before you trust it.
+
+## Highlights
+
+- **🖱️ One right click** — a menu item on every image of every page.
+- **✂️ Select, do not retype** — one transparent line of text per line of the
+  image, so the browser gives you the selection, the highlight and the copy that
+  you already know. A `Copy` button takes the whole text.
+- **🔲 Scan any region** — the toolbar button and `Alt+Shift+S` open a crosshair.
+  Drag over a CSS background, a canvas, a video frame, a chart, or a paragraph
+  that refuses to be selected.
+- **📴 Nothing leaves the machine** — Tesseract runs in WebAssembly next to the
+  page. The extension reaches one host, and only to fetch a language that you
+  asked for.
+- **🌍 28 languages** — English travels inside the package. Every other language
+  downloads once, then Chrome keeps it.
+- **🔍 Small text still reads** — a small image grows before the scan, which is the
+  single change that helps the accuracy most.
+- **🧯 A second way in** — an image host that blocks a direct read does not stop
+  the scan: the extension reads the pixels of the screen instead.
+
+## Install
+
+Download the latest package, then load it:
+
+1. Take `textlift-<version>.zip` from the
+   [latest release](https://github.com/theophile-wallez/textlift/releases/latest).
+2. Unzip it into a directory that stays on your disk.
+3. Open `chrome://extensions` and turn on **Developer mode**.
+4. Choose **Load unpacked** and select that directory.
+
+Or build it yourself:
 
 ```sh
 npm install
-npm run build      # writes dist/, and downloads the engine on the first run
+npm run build      # writes dist/, and collects the engine on the first run
 ```
 
-Then open `chrome://extensions`, turn on **Developer mode**, choose **Load
-unpacked**, and select the `dist` directory.
+Then load `dist` the same way. `npm run build:watch` rebuilds on every change.
 
-`npm run build:watch` rebuilds on every change. Press the reload button of the
-extension card after a change of the service worker or of the manifest.
+## Use it
+
+| Action                           | How                                              |
+| -------------------------------- | ------------------------------------------------ |
+| Read one image                   | Right-click it → **Scan the text of this image** |
+| Read a part of the screen        | `Alt+Shift+S`, or the toolbar button, then drag  |
+| Copy one line                    | Drag across it, then `Ctrl+C`                    |
+| Copy everything                  | The `Copy` button of the toolbar                 |
+| Close the overlay                | `Escape`, or the `✕` button                      |
+| Languages, enlargement, and more | Right-click the toolbar button → **Options**     |
 
 ## How it works
 
@@ -107,7 +163,8 @@ npm test              # the unit tests of src/core and of the manifest
 npm run test:browser  # the end-to-end test, needs Chromium and a display
 npm run build         # writes dist/
 npm run build:watch   # rebuilds on every change
-npm run package       # writes the ZIP for the Chrome Web Store
+npm run package       # writes the ZIP of a release
+npm run demo          # draws docs/demo.png again
 npm run vendor        # collects the engine files again
 npm run icons         # draws the icons again
 ```
@@ -117,6 +174,18 @@ renders a sentence, reads it back through the whole pipeline, selects the text
 with the mouse, and runs a region scan at a pixel ratio of 2. Chrome loads an
 unpacked extension in a headed browser only, so a machine without a display needs
 `xvfb-run -a npm run test:browser`.
+
+## Cut a release
+
+```sh
+npm version patch        # writes package.json and the tag
+git push --follow-tags
+```
+
+The tag starts `.github/workflows/release.yml`. The workflow compares the tag with
+the version of the package, runs every check, reads a real image in a real
+browser, and attaches `textlift-<version>.zip` to the release of that tag. A tag
+with a suffix, such as `v0.2.0-beta.1`, becomes a pre-release.
 
 ## Limits
 

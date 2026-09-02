@@ -1,0 +1,115 @@
+# Builds the extension for a version tag, tests it, and attaches the package to
+# the release of that tag.
+#
+# Cut a release with two commands:
+#   npm version patch     # writes package.json and the tag
+#   git push --follow-tags
+#
+# A run against an existing tag repeats the checks and replaces the package.
+
+name: release
+
+on:
+  push:
+    tags:
+      - "v*"
+  # A manual run needs a tag in the "Use workflow from" menu, not a branch.
+  workflow_dispatch:
+
+# The job creates a release and uploads an asset to it.
+permissions:
+  contents: write
+
+concurrency:
+  group: release-${{ github.ref_name }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: build, test, publish
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+
+    steps:
+      - name: Check out the tag
+        uses: actions/checkout@v4
+        with:
+          # GitHub reads the previous tag to generate the list of the commits.
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install the dependencies
+        run: npm ci
+
+      - name: Compare the tag with the version of the package
+        id: version
+        run: node scripts/check-version.mjs "${{ github.ref_name }}"
+
+      # The engine files come from node_modules and from the Tesseract data host.
+      # The cache keeps the second one out of the critical path of a release.
+      - name: Restore the engine files
+        uses: actions/cache@v4
+        with:
+          path: public/vendor
+          key: vendor-${{ runner.os }}-${{ hashFiles('package-lock.json', 'scripts/vendor.mjs') }}
+
+      - name: Collect the engine files
+        run: npm run vendor
+
+      - name: Check the format, the types, the build, and the unit tests
+        run: npm run check
+
+      - name: Install Chromium for the browser test
+        run: npx playwright install --with-deps chromium
+
+      # The runner holds no display, and Chrome loads an unpacked extension in a
+      # headed browser only.
+      - name: Read a real image with a real browser
+        run: xvfb-run -a npm run test:browser
+
+      - name: Write the package
+        id: package
+        run: |
+          set -euo pipefail
+          npm run package
+          echo "file=$(ls textlift-*.zip)" >> "$GITHUB_OUTPUT"
+
+      - name: Write the release notes
+        run: node scripts/release-notes.mjs "${{ steps.package.outputs.file }}" > release-notes.md
+
+      - name: Publish the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+          ZIP: ${{ steps.package.outputs.file }}
+          # An empty value adds no flag, so the release becomes the latest one.
+          PRERELEASE: ${{ steps.version.outputs.prerelease == 'true' && '--prerelease' || '' }}
+        run: |
+          set -euo pipefail
+          if gh release view "$TAG" > /dev/null 2>&1; then
+            echo "the release exists, so the package replaces the previous asset"
+            gh release upload "$TAG" "$ZIP" --clobber
+          else
+            # $PRERELEASE carries a flag or nothing, so it stays unquoted.
+            gh release create "$TAG" "$ZIP" \
+              --title "textlift $TAG" \
+              --notes-file release-notes.md \
+              --generate-notes \
+              --verify-tag \
+              $PRERELEASE
+          fi
+          gh release view "$TAG" --json url,assets --jq '.url, .assets[].name'
+
+      # A workflow artifact keeps the package for 90 days, which helps an
+      # investigation of a release that a user reports as broken.
+      - name: Keep the package as a workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.package.outputs.file }}
+          path: ${{ steps.package.outputs.file }}
+          if-no-files-found: error

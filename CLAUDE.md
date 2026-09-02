@@ -43,6 +43,12 @@ an unpacked extension in a headed browser only.
   runs that script when a file is missing.
 - The icons in `icons/` are generated. Edit `scripts/make-icons.mjs`, then run
   `npm run icons`.
+- `docs/demo.png` is generated, and it stays in git because the README shows it.
+  Run `xvfb-run -a npm run demo` after a change of the overlay.
+- A release comes from a tag. `npm version patch && git push --follow-tags` starts
+  `.github/workflows/release.yml`, which attaches the ZIP to the release. Never
+  upload a package by hand, because the workflow is the only path that runs the
+  browser test first.
 
 ## Auto-ship
 
