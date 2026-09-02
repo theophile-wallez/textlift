@@ -53,7 +53,9 @@ export class Overlay {
 
     this.host = document.createElement("div");
     this.host.id = HOST_ID;
-    this.host.style.setProperty("all", "initial");
+    // No inline reset here. An inline style beats the `:host` rule, and it reset
+    // the font of the whole overlay to the default of the browser, which is a
+    // serif. `overlay.css` holds the reset, and it sets the font after it.
     this.root = this.host.attachShadow({ mode: "open" });
 
     const style = document.createElement("style");

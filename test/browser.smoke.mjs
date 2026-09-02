@@ -238,6 +238,7 @@ const main = async () => {
         text: lines.map((node) => node.textContent).join("\n"),
         transformed: lines.every((node) => node.style.transform.startsWith("scaleX(")),
         firstLine: lines[0]?.getBoundingClientRect() ?? null,
+        font: getComputedStyle(host.shadowRoot.querySelector(".bar")).fontFamily,
         image: { x: image.x, y: image.y, width: image.width, height: image.height },
         frame: { x: frame.x, y: frame.y, width: frame.width, height: frame.height },
         status: host.shadowRoot.querySelector(".status")?.textContent ?? "",
@@ -257,6 +258,18 @@ const main = async () => {
       "the first line sits outside the image",
     );
     assert.ok(overlay.status.includes("word"), `the toolbar shows "${overlay.status}"`);
+
+    // An inline reset on the host once beat the `:host` rule, and the whole
+    // overlay fell back to the serif default of the browser.
+    assert.ok(
+      overlay.font.startsWith("system-ui"),
+      `the toolbar reads its font from "${overlay.font}"`,
+    );
+    assert.ok(!/times/i.test(overlay.font), `the toolbar names a serif: ${overlay.font}`);
+    assert.ok(
+      /(^|,\s*)sans-serif\s*$/.test(overlay.font),
+      `the last family of the toolbar is not sans-serif: ${overlay.font}`,
+    );
 
     console.log(`smoke: overlay holds ${overlay.lineCount} selectable lines`);
     console.log(`smoke: toolbar reads "${overlay.status}"`);

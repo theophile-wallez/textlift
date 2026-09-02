@@ -20,7 +20,7 @@ const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const dist = join(root, "dist");
 const target = join(root, "docs/demo.png");
 
-/** The note that the demo reads. A handwritten font keeps it honest: it is an image. */
+/** The note that the demo reads. It is an image, so no text of it is selectable. */
 const NOTE = `<!doctype html>
 <html><head><meta charset="utf-8">
 <style>
@@ -30,9 +30,9 @@ const NOTE = `<!doctype html>
     padding: 34px 40px 38px;
     background: linear-gradient(#fffdf6, #fdf8ea);
     color: #232019;
-    font: 400 25px/1.62 "DejaVu Serif", Georgia, serif;
+    font: 400 25px/1.62 system-ui, "Segoe UI", Inter, Roboto, sans-serif;
   }
-  h1 { margin: 0 0 14px; font-size: 29px; letter-spacing: 0.01em; }
+  h1 { margin: 0 0 14px; font-size: 29px; font-weight: 600; letter-spacing: -0.01em; }
   p { margin: 0 0 6px; }
   .dim { color: #6b6152; font-size: 21px; }
 </style></head>

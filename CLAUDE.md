@@ -41,6 +41,11 @@ an unpacked extension in a headed browser only.
   drops an underlined line: a link under a message disappeared that way. Pass every
   parameter on every call, because the engine keeps a value that a later call
   omits.
+- Set no inline style on the host of the overlay. An inline style beats the
+  `:host` rule, and `all: initial` there reset the font of the whole overlay to
+  the serif default of the browser. `overlay.css` owns the reset. A custom
+  property survives `all: initial`, so `--tl-font` carries the stack and every
+  element of the overlay names it. The browser test reads the font of the toolbar.
 - Never repaint the text layer on a scroll. A repaint replaces every span, and
   that drops the selection of the user. `Overlay.reposition` repaints on a size
   change and on new data only.

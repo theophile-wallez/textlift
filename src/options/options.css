@@ -5,6 +5,7 @@
   --muted: #6b6f76;
   --line: #e4e6ea;
   --accent: #2f6df6;
+  --font: system-ui, -apple-system, "Segoe UI", Inter, Roboto, "Helvetica Neue", Arial, sans-serif;
   color-scheme: light dark;
 }
 
@@ -27,12 +28,9 @@ body {
   margin: 0;
   background: var(--page);
   color: var(--text);
-  font:
-    400 14px / 1.5 ui-sans-serif,
-    system-ui,
-    -apple-system,
-    "Segoe UI",
-    sans-serif;
+  font-family: var(--font);
+  font-size: 14px;
+  line-height: 1.5;
 }
 
 .page {

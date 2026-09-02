@@ -11,12 +11,11 @@
   --tl-line: #e6e7ea;
   --tl-accent: #2f6df6;
   --tl-shadow: 0 1px 2px rgb(16 18 22 / 8%), 0 8px 24px rgb(16 18 22 / 12%);
-  font-family:
-    ui-sans-serif,
-    system-ui,
-    -apple-system,
-    "Segoe UI",
-    sans-serif;
+  /* `all: initial` above resets the font, and a custom property survives it. So
+     every element of the overlay names the stack itself. */
+  --tl-font:
+    system-ui, -apple-system, "Segoe UI", Inter, Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--tl-font);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -67,7 +66,7 @@
   -webkit-text-fill-color: transparent;
   text-shadow: none;
   font-weight: 400;
-  font-family: ui-sans-serif, system-ui, sans-serif;
+  font-family: var(--tl-font);
 }
 
 .line::selection {
@@ -105,6 +104,7 @@
   background: var(--tl-surface);
   box-shadow: var(--tl-shadow);
   color: var(--tl-text);
+  font-family: var(--tl-font);
   font-size: 12px;
   line-height: 1.35;
   pointer-events: auto;
@@ -146,6 +146,7 @@ button {
   background: transparent;
   color: var(--tl-text);
   font: inherit;
+  font-family: var(--tl-font);
   font-size: 12px;
   cursor: pointer;
   transition:
