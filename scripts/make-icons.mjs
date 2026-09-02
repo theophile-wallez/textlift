@@ -14,8 +14,12 @@ import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const outDir = join(root, "icons");
+const docsDir = join(root, "docs");
 
 const SIZES = [16, 32, 48, 128];
+
+/** The README displays the mark at 96 CSS pixels, so it needs twice that. */
+const README_SIZE = 192;
 
 const BACKGROUND = [47, 109, 246, 255];
 const INK = [255, 255, 255, 255];
@@ -161,6 +165,13 @@ const main = async () => {
     await writeFile(join(outDir, `icon-${size}.png`), png);
     console.log(`icons: icon-${size}.png ${png.length} bytes`);
   }
+
+  // The README shows the mark, so one copy stays in git. `icons/` does not: the
+  // build regenerates it, and the package carries it.
+  await mkdir(docsDir, { recursive: true });
+  const large = encodePng(drawMark(README_SIZE));
+  await writeFile(join(docsDir, "icon.png"), large);
+  console.log(`icons: docs/icon.png ${large.length} bytes`);
 };
 
 await main();

@@ -41,8 +41,9 @@ an unpacked extension in a headed browser only.
   change and on new data only.
 - Keep `public/vendor/` out of git. `npm run vendor` collects it, and the build
   runs that script when a file is missing.
-- The icons in `icons/` are generated. Edit `scripts/make-icons.mjs`, then run
-  `npm run icons`.
+- The icons in `icons/` are generated, and they stay out of git. Edit
+  `scripts/make-icons.mjs`, then run `npm run icons`. That script also writes
+  `docs/icon.png`, which stays in git because the README shows it.
 - `docs/demo.png` is generated, and it stays in git because the README shows it.
   Run `xvfb-run -a npm run demo` after a change of the overlay.
 - A release comes from a tag. `npm version patch && git push --follow-tags` starts
