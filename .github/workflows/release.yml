@@ -32,13 +32,13 @@ jobs:
 
     steps:
       - name: Check out the tag
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           # GitHub reads the previous tag to generate the list of the commits.
           fetch-depth: 0
 
       - name: Set up Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
@@ -53,7 +53,7 @@ jobs:
       # The engine files come from node_modules and from the Tesseract data host.
       # The cache keeps the second one out of the critical path of a release.
       - name: Restore the engine files
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: public/vendor
           key: vendor-${{ runner.os }}-${{ hashFiles('package-lock.json', 'scripts/vendor.mjs') }}
@@ -108,7 +108,7 @@ jobs:
       # A workflow artifact keeps the package for 90 days, which helps an
       # investigation of a release that a user reports as broken.
       - name: Keep the package as a workflow artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: ${{ steps.package.outputs.file }}
           path: ${{ steps.package.outputs.file }}
