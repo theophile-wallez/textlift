@@ -11,7 +11,7 @@
  */
 
 import { Context, Effect, Layer, Ref } from "effect";
-import { createWorker, OEM, type Page, type PSM, type Worker } from "tesseract.js";
+import { createWorker, OEM, type Page, type Worker, type WorkerParams } from "tesseract.js";
 import { relaxedSimd, simd } from "wasm-feature-detect";
 import {
   ENGINE_DIR,
@@ -26,7 +26,7 @@ import { resolveDataLocation, toEngineLanguages } from "../core/languages.js";
 import { buildLine, buildResult, type OcrLine, type OcrResult } from "../core/ocr.js";
 import { inverseScale, type ScalePlan } from "../core/preprocess.js";
 import type { OcrRequest, Progress } from "../core/protocol.js";
-import { toPageSegMode } from "../core/settings.js";
+import { engineParameters } from "../core/settings.js";
 
 export interface RecognizeInput {
   readonly canvas: OffscreenCanvas;
@@ -179,12 +179,11 @@ const makeEngine = Effect.gen(function* () {
 
       yield* Effect.tryPromise({
         try: () =>
-          active.worker.setParameters({
-            // A Tesseract mode number is a string, and the types of the engine
-            // name that set of strings `PSM`.
-            tessedit_pageseg_mode: toPageSegMode(input.request.layout) as PSM,
-            preserve_interword_spaces: "1",
-          }),
+          // `engineParameters` returns plain strings, and the types of the engine
+          // name the set of the mode numbers `PSM`.
+          active.worker.setParameters(
+            engineParameters(input.request.layout) as Partial<WorkerParams>,
+          ),
         catch: (cause) => new EngineError({ phase: "initialize", reason: describeUnknown(cause) }),
       });
 

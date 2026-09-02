@@ -36,6 +36,11 @@ an unpacked extension in a headed browser only.
   that the user reads.
 - Add `retryable: true` to an error only when a second source of pixels can
   succeed, because that flag starts the screenshot fallback.
+- Keep `user_defined_dpi` in `engineParameters`. Without it the engine estimates
+  the resolution, the enlargement misleads that estimate, and the layout analysis
+  drops an underlined line: a link under a message disappeared that way. Pass every
+  parameter on every call, because the engine keeps a value that a later call
+  omits.
 - Never repaint the text layer on a scroll. A repaint replaces every span, and
   that drops the selection of the user. `Overlay.reposition` repaints on a size
   change and on new data only.

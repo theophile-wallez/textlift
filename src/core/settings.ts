@@ -24,6 +24,34 @@ const PAGE_SEG_MODE: Record<LayoutMode, string> = {
 
 export const toPageSegMode = (mode: LayoutMode): string => PAGE_SEG_MODE[mode];
 
+/**
+ * The resolution that the engine assumes.
+ *
+ * Tesseract estimates the resolution of an image, and the enlargement of the
+ * pipeline misleads that estimate: a 3x enlargement of a screen capture reports
+ * about 700 dpi. The layout analysis then reads an underlined line as a rule of a
+ * table and drops the whole block, so a link under a message disappears while
+ * every other line arrives.
+ *
+ * An explicit value stops the estimate. 300 dpi is the resolution that Tesseract
+ * is tuned for, and a measurement over one capture at 1x, 2x and 3x keeps the
+ * underlined line at every step with this value.
+ */
+export const ENGINE_DPI = "300";
+
+/**
+ * Every parameter of one recognition.
+ *
+ * The engine keeps a parameter that a later call does not repeat, and the worker
+ * lives between two scans, so this object always carries the whole set.
+ */
+export const engineParameters = (layout: LayoutMode): Record<string, string> => ({
+  tessedit_pageseg_mode: toPageSegMode(layout),
+  // A space between two words of one line survives, which keeps a column apart.
+  preserve_interword_spaces: "1",
+  user_defined_dpi: ENGINE_DPI,
+});
+
 export const SettingsSchema = z.object({
   /** Recognition languages, in order of priority. */
   languages: z.array(LanguageCodeSchema).min(1).default([DEFAULT_LANGUAGE]),

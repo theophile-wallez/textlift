@@ -3,5 +3,7 @@ dist/
 public/vendor/
 icons/
 *.zip
+# tesseract.js caches the training data in the working directory under Node.
+*.traineddata
 .DS_Store
 .worktrees/
