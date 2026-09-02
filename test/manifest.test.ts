@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
+import { MENU_ITEMS } from "@/background/menus.js";
 import { buildManifest } from "@/manifest.js";
 
 const manifest = buildManifest({ version: "1.2.3" });
@@ -44,6 +45,24 @@ describe("buildManifest", () => {
 
   it("binds a keyboard command to the region scan", () => {
     expect(manifest.commands?.["scan-region"]).toBeDefined();
+  });
+});
+
+describe("MENU_ITEMS", () => {
+  it("holds one item, so the context menu carries no submenu", () => {
+    expect(MENU_ITEMS).toHaveLength(1);
+  });
+
+  it("shows that item on an image only", () => {
+    expect(MENU_ITEMS[0]?.contexts).toEqual(["image"]);
+  });
+
+  it("nests no item under another one", () => {
+    for (const item of MENU_ITEMS) expect(item.parentId).toBeUndefined();
+  });
+
+  it("names the item after the action that it starts", () => {
+    expect(MENU_ITEMS[0]?.title).toBe("Scan the text of this image");
   });
 });
 

@@ -109,18 +109,8 @@ chrome.contextMenus.onClicked.addListener((info, tab) => {
   const target: TabTarget = { tabId: tab.id, frameId: info.frameId ?? 0 };
   const windowId = tab.windowId ?? chrome.windows.WINDOW_ID_CURRENT;
 
-  switch (info.menuItemId) {
-    case MenuId.ScanImage:
-      if (info.srcUrl === undefined) return;
-      run(scanImage(target, windowId, info.srcUrl));
-      return;
-    case MenuId.ScanRegion:
-      // A screenshot covers the whole tab, so the selection runs in the top frame.
-      run(requestRegion({ tabId: tab.id, frameId: 0 }, windowId));
-      return;
-    default:
-      return;
-  }
+  if (info.menuItemId !== MenuId.ScanImage || info.srcUrl === undefined) return;
+  run(scanImage(target, windowId, info.srcUrl));
 });
 
 chrome.action.onClicked.addListener((tab) => {

@@ -47,7 +47,10 @@ ever reaches a server, and the whole thing works with the network off.
   you already know. A `Copy` button takes the whole text.
 - **🔲 Scan any region** — the toolbar button and `Alt+Shift+S` open a crosshair.
   Drag over a CSS background, a canvas, a video frame, a chart, or a paragraph
-  that refuses to be selected.
+  that refuses to be selected. The context menu keeps one item only.
+- **🔗 A link survives the copy** — a chat window renders the hyphen of a link with
+  wide space around it, and the engine reads that space as a word break. textlift
+  rebuilds the address, and it leaves "10 - 20" and "Jean - Pierre" alone.
 - **📴 Nothing leaves the machine** — Tesseract runs in WebAssembly next to the
   page. The extension reaches one host, and only to fetch a language that you
   asked for.
@@ -199,7 +202,7 @@ with a suffix, such as `v0.2.0-beta.1`, becomes a pre-release.
 | Permission     | Reason                                                   |
 | -------------- | -------------------------------------------------------- |
 | `<all_urls>`   | Reads the bytes of an image of any host, and screenshots |
-| `contextMenus` | The two menu items                                       |
+| `contextMenus` | The menu item on an image                                |
 | `offscreen`    | Hosts the engine outside the service worker              |
 | `storage`      | The settings, and the pending region of a selection      |
 | `scripting`    | Injects the overlay into a tab that Chrome loaded before |
